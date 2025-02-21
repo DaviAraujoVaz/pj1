@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="PaginaLogin.css" />
+    <title>Login</title>
+  </head>
+  <body>
+    <form action="" method="post" class="login-container">
+      <h2>Login</h2>
+
+      <input
+        required
+        type="text"
+        id="username"
+        placeholder="Nome de usuário"
+        oninput="validateInput()"
+      />
+
+      <input
+        required
+        type="password"
+        id="password"
+        placeholder="Senha"
+        oninput="validateInput()"
+      />
+
+      <button id="loginButton" onclick="login()" disabled>Login</button>
+      <div id="message" class="message"></div>
+
+      <a href="forgotPassword.html" class="forgot-password">
+        Esqueci minha senha</a
+      >
+    </form>
+  </body>
+  <script src="script.js"></script>
+</html>

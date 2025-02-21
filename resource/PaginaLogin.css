@@ -1,0 +1,161 @@
+:root {
+  --primary-100: #003366;
+  --primary-200: #3f5c94;
+  --primary-300: #a1b8f8;
+  --accent-100: #336699;
+  --accent-200: #ccf6ff;
+  --text-100: #ffffff;
+  --text-200: #e0e0e0;
+  --bg-100: #0a043c;
+  --bg-200: #1c164d;
+  --bg-300: #372c67;
+}
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+::placeholder {
+  color: var(--text-200);
+}
+
+body {
+  font-family: Arial, sans-serif;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  height: 100vh;
+  background-color: var(--bg-100);
+}
+
+.login-container {
+  background-color: var(--bg-200);
+  width: 40%;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.login-container h2 {
+  margin-bottom: 20px;
+  color: var(--text-100);
+}
+
+.login-container input {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid var(--primary-200);
+  border-radius: 4px;
+  background-color: var(--bg-300);
+  color: var(--text-200);
+}
+
+.login-container button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 20px;
+  background-color: var(--primary-100);
+  border: none;
+  border-radius: 4px;
+  color: var(--text-100);
+  font-size: 16px;
+  cursor: pointer;
+
+  transition: 0.2s ease-out;
+}
+
+.login-container button:hover {
+  transform: scale(1.03);
+
+  background-color: var(--primary-200);
+}
+.forgot-password {
+    margin-top: 10px;
+    text-align: right;
+    color: var(--text-200);
+    font-size: 12px;
+}
+
+.forgot-password:hover {
+    color: var(--primary-300);
+    text-decoration-color: var(--primary-300);
+}
+
+.message {
+  margin-top: 10px;
+  font-size: 14px;
+  color: var(--text-200);
+}
+
+.error {
+  color: red;
+}
+
+.success {
+  color: green;
+}
+
+@media (max-width: 768px) {
+  .login-container {
+    width: 80%;
+    padding: 15px;
+  }
+
+  .login-container h2 {
+    font-size: 1.5em;
+  }
+
+  .login-container input,
+  .login-container button {
+    padding: 8px;
+    font-size: 14px;
+  }
+
+  .login-container button {
+    margin-top: 15px;
+  }
+
+  .forgot-password {
+    font-size: 12px;
+  }
+
+  .message {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-container {
+    width: 90%;
+    padding: 10px;
+  }
+
+  .login-container h2 {
+    font-size: 1.2em;
+  }
+
+  .login-container input,
+  .login-container button {
+    padding: 6px;
+    font-size: 12px;
+  }
+
+  .login-container button {
+    margin-top: 10px;
+  }
+
+  .forgot-password {
+    font-size: 10px;
+  }
+
+  .message {
+    font-size: 10px;
+  }
+}
