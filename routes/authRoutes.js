@@ -40,21 +40,28 @@ const authMiddleware =
     // res.status(401).end()
   }
 
+// middleware so aqui
 router.get('/users', authMiddleware, authController.getUsers);
 
 router.put('/users', authController.updateUser);
 
 router.post('/login', (req, res) => {
+
   // todo: verificar se a senha em branco depois de hasheada bate com o banco
   // se ok, criar uma session. Por enquanto hardcoded.
   if (req.body.name == 'vitor' && req.body.password == '123') {
+    // 1 dar select no banco pelo username
+    // 2 comparar a senha crypto do banco com a senha placa cripgrafada
+    // bcrypt.compareSync()
+    // 3 caso positivo salva a session no "sessions" (Map)
+
     // Depois de verificada a senha pegar o usuario do banco e salvar na session com
     // os dados necessarios, como id, nome, email.
     const sessionId = crypto.randomUUID()
     // Setar a sessao no mapa de sessions, lembrando que em algum momento deveria expirar
     // esse "token" e no mundo real provavelmente seria um JWT.
     sessions.set(sessionId, { username: 'vitor', id: 1 })
-    res.json({ msg: "ok", sessionId })
+    res.send(sessionId)
     return
   }
   return res.status(400).send('Nome e senha estão incorretos!');
