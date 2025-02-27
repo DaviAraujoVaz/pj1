@@ -1,0 +1,34 @@
+:root {
+  --primary-100: #003366;
+  --primary-200: #3f5c94;
+  --primary-300: #a1b8f8;
+  --accent-100: #336699;
+  --accent-200: #ccf6ff;
+  --text-100: #ffffff;
+  --text-200: #e0e0e0;
+  --bg-100: #0a043c;
+  --bg-200: #1c164d;
+  --bg-300: #372c67;
+}
+
+*,
+*::after,
+*::before {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: var(--bg-100);
+  color: var(--text-100);
+  text-align: center;
+  padding: 50px;
+}
+
+h1 {
+  color: var(--accent-200);
+}
+
+p {
+  color: var(--text-200);
+}
