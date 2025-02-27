@@ -22,6 +22,7 @@ exports.createUser =
 
         try {
             const hashedPassword = await bcrypt.hash(password, 10);
+            
             db.query(
                 'INSERT INTO users (username, password_hash) VALUES (?, ?)',
                 [name, hashedPassword], (err, result) => {
@@ -40,6 +41,18 @@ exports.createUser =
 exports.getUsers =
     (req, res) => {
         db.query('SELECT * FROM users', (err, result) => {
+            if (err) {
+                console.log('Erro ao buscar usuários', err);
+                res.status(500).send('Erro ao buscar usuários');
+                return;
+            }
+            res.status(200).send(result);
+        });
+    }
+
+    exports.getSpecificUser =
+    (req, res) => {
+        db.query('SELECT * FROM users WHERE id = ?', (err, result) => {
             if (err) {
                 console.log('Erro ao buscar usuários', err);
                 res.status(500).send('Erro ao buscar usuários');

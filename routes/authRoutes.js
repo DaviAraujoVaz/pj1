@@ -1,71 +1,79 @@
+
 const express = require('express');
 const authController = require('../controllers/authController');
 const router = express.Router();
-const crypto = require('node:crypto')
+const crypto = require('node:crypto');
+const db = require('../config/database');
+const bcrypt = require('bcrypt');
 
-const sessions = new Map()
+const sessions = new Map();
 
-router.post('/users', authController.createUser);
+// Middleware de autenticação
+const authMiddleware = async (req, res, next) => {
+    const authHeader = req.headers['authorization'];
 
-const authMiddleware =
-  async (req, res, next) => {
-    // Verificar nos headers Authorization: Bearer XXXXXX onde XXXX e seu UUID
-    // gerado no post /auth/login
-    const authHeader = req.headers['authorization']
-    // Nao tem nem o header setado, retornar 401
     if (!authHeader) {
-      res.status(401).end()
-      return
+        return res.status(401).json({ error: 'Token não fornecido' });
     }
-    // Separar a palavra "Bearer " do valor do token, dando split e pegando 
-    // a segunda parte depois do espaco (o valor do UUID em si)
-    const sessionId = authHeader.split(' ')[1]
 
-    const user = sessions.get(sessionId)
+    const [bearer, sessionId] = authHeader.split(' ');
 
-    console.log('Verificando por user com session', sessionId)
+    if (bearer !== 'Bearer' || !sessionId) {
+        return res.status(401).json({ error: 'Formato de token inválido' });
+    }
+
+    const user = sessions.get(sessionId);
+
+    console.log('Verificando sessão para ID:', sessionId);
 
     if (!user) {
-      res.status(401).end()
-      return
+        return res.status(401).json({ error: 'Sessão inválida ou expirada' });
     }
 
-    console.log('Encontrada session para user', user)
-    next()
-    // if (req.query.bypass) {
-    //   req.session = { id: 1}
-    //   next();
-    //   return
-    // }
-    // res.status(401).end()
-  }
+    console.log('Sessão encontrada para usuário:', user.username);
+    req.user = user; // Anexa o usuário autenticado ao request
+    next();
+};
 
-// middleware so aqui
+// Rotas
+router.post('/users', authController.createUser);
 router.get('/users', authMiddleware, authController.getUsers);
+router.put('/users', authMiddleware, authController.updateUser);
 
-router.put('/users', authController.updateUser);
+router.post('/login', async (req, res) => {
+    const { name, password } = req.body;
 
-router.post('/login', (req, res) => {
+    if (!name || !password) {
+        return res.status(400).json({ error: 'Nome e senha são obrigatórios' });
+    }
 
-  // todo: verificar se a senha em branco depois de hasheada bate com o banco
-  // se ok, criar uma session. Por enquanto hardcoded.
-  if (req.body.name == 'vitor' && req.body.password == '123') {
-    // 1 dar select no banco pelo username
-    // 2 comparar a senha crypto do banco com a senha placa cripgrafada
-    // bcrypt.compareSync()
-    // 3 caso positivo salva a session no "sessions" (Map)
+    // 1. Buscar usuário no banco
+    db.query('SELECT * FROM users WHERE username = ?', [name], async (err, results) => {
+        if (err) {
+            console.error('Erro ao buscar usuário no banco:', err);
+            return res.status(500).json({ error: 'Erro interno' });
+        }
 
-    // Depois de verificada a senha pegar o usuario do banco e salvar na session com
-    // os dados necessarios, como id, nome, email.
-    const sessionId = crypto.randomUUID()
-    // Setar a sessao no mapa de sessions, lembrando que em algum momento deveria expirar
-    // esse "token" e no mundo real provavelmente seria um JWT.
-    sessions.set(sessionId, { username: 'vitor', id: 1 })
-    res.send(sessionId)
-    return
-  }
-  return res.status(400).send('Nome e senha estão incorretos!');
+        if (results.length === 0) {
+            return res.status(400).json({ error: 'Usuário ou senha incorretos' });
+        }
+
+        const user = results[0];
+
+        // 2. Comparar hash da senha
+        const senhaCorreta = await bcrypt.compare(password, user.password_hash);
+        if (!senhaCorreta) {
+            return res.status(400).json({ error: 'Usuário ou senha incorretos' });
+        }
+
+        // 3. Criar sessão e armazenar no Map
+        const sessionId = crypto.randomUUID();
+        sessions.set(sessionId, { id: user.id, username: user.username });
+
+        console.log(`Sessão criada: ${sessionId} para ${user.username}`);
+
+        res.json({ sessionId });
+    });
 });
-
 
 module.exports = router;
